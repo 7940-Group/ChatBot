@@ -4,9 +4,6 @@ from pymongo import MongoClient
 
 import configparser
 import logging
-import redis
-
-global redis1
 
 cart = []
 
@@ -18,15 +15,12 @@ def main():
     updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
     dispatcher = updater.dispatcher
 
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient('mongodb://124.71.84.38:27017/')
     db = client['chatbot']
     global menu_collection 
     global orders_collection 
     menu_collection = db['food']
     orders_collection = db["orders"]
-
-    global redis1
-    redis1 = redis.Redis(host=(config['REDIS']['HOST']), password=(config['REDIS'] ['PASSWORD']), port=(config['REDIS']['REDISPORT']))
 
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - % (message)s', level=logging.INFO)
 
@@ -69,23 +63,11 @@ def place_order(update: Update, context: CallbackContext) -> None:
         price = menu_item['price']
         user_id = update.message.from_user.id
         cart.append({'user_id': user_id, 'name': dish, 'price': price})
-        total_price = sum(item['price'] for item in cart)
+        total_price = sum(int(item['price']) for item in cart)
         update.message.reply_text(f"You added {dish} to your cart. The price is ${price}.")
         update.message.reply_text(f"Total price: ${total_price}")
     else:
         update.message.reply_text("Sorry, this food doesn't exist!")
-
-# 取消购物车的某个商品
-def cancel_item(update: Update, context: CallbackContext) -> None:
-    user_id = update.message.from_user.id
-    dish = context.args[0]
-    items_to_cancel = [item for item in cart if item['user_id'] == user_id and item['name'] == dish]
-
-    if items_to_cancel:
-        cart.remove(items_to_cancel[0])
-        update.message.reply_text(f"{dish} removed from your cart.")
-    else:
-        update.message.reply_text(f"{dish} is not found in your cart.")
 
 # 查看帮助
 def help(update: Update, context: CallbackContext) -> None:
@@ -96,7 +78,7 @@ def help(update: Update, context: CallbackContext) -> None:
     help_text += "/order - /order [food name] to order a item\n"
     help_text += "/menu - read menu\n"
     help_text += "/cart - show your cart\n"
-    help_text += "/cancel - /cancel [food name] to cancel a item\n"
+    help_text += "/submit - submit your order\n"
     update.message.reply_text(help_text)
 
 # 展示购物车
@@ -106,7 +88,7 @@ def show_cart(update: Update, context: CallbackContext) -> None:
 
     if user_cart:
         cart_list = "\n".join([f"{item['name']}: ${item['price']}" for item in user_cart])
-        total_price = sum(item['price'] for item in user_cart)
+        total_price = sum(int(item['price']) for item in user_cart)
         update.message.reply_text(f"Your Cart:\n{cart_list}")
         update.message.reply_text(f"Total price: ${total_price}")
     else:
