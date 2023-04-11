@@ -4,15 +4,18 @@ from pymongo import MongoClient
 
 import configparser
 import logging
+import os
 
 cart = []
+
+telegram_api_token = os.environ.get('ACCESS_TOKEN')
 
 def main():
 # Load your token and create an Updater for your Bot
 
     config = configparser.ConfigParser()
     config.read('config.ini')
-    updater = Updater(token=('6021743983:AAHPiEFuae5GIRQxF6iIoEVL8JcRCbIXAX0'), use_context=True)
+    updater = Updater(token=telegram_api_token, use_context=True)
     dispatcher = updater.dispatcher
 
     client = MongoClient('mongodb://124.71.84.38:27017/')
