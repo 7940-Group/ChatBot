@@ -12,7 +12,7 @@ def main():
 
     config = configparser.ConfigParser()
     config.read('config.ini')
-    updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
+    updater = Updater(token=('6021743983:AAHPiEFuae5GIRQxF6iIoEVL8JcRCbIXAX0'), use_context=True)
     dispatcher = updater.dispatcher
 
     client = MongoClient('mongodb://124.71.84.38:27017/')
