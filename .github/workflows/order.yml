@@ -33,7 +33,7 @@ jobs:
             registry-login-server: ${{ secrets.REGISTRY }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: mybot
+            name: ordering-bot
             secure-environment-variables: ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}
             location: 'east us'
             
